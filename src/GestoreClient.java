@@ -4,7 +4,13 @@ import java.net.UnknownHostException;
 public class GestoreClient {
 
 	public static void main(String[] args) {
-		Client cli = new Client(args[0], Integer.parseInt(args[1]));
+		Client cli = null;
+		
+		try {
+			cli = new Client(InetAddress.getLocalHost(), 2000);
+		} catch (UnknownHostException e1) {
+			e1.printStackTrace();
+		}
 		
         try {
 			System.out.println("-- Running UDP Client at " + InetAddress.getLocalHost() + " --");
@@ -13,5 +19,6 @@ public class GestoreClient {
 		}
         
         cli.start();
+        cli.receive();
 	}
 }

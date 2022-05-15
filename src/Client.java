@@ -3,23 +3,18 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.Scanner;
 
 public class Client {
 	private DatagramSocket udpSocket;
+	private DatagramPacket in;
     private InetAddress serverAddress;
     private int port;
     private Scanner scanner;
     
-    public Client(String destinationAddr, int port){
+    public Client(InetAddress ip, int port){
     	
-        try {
-			this.serverAddress = InetAddress.getByName(destinationAddr);
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
-        
+		this.serverAddress = ip;
         this.port = port;
         
         try {
@@ -30,10 +25,12 @@ public class Client {
         scanner = new Scanner(System.in);
     }
     
-    public int start(){
-        String in;
+    public void start(){
+        String in = "";
+        String q ="quit";
         
-        while (true) {
+        while (!in.equals(q)) {
+        	System.out.println("scrivi qualcosa: ");
             in = scanner.nextLine();
             
             DatagramPacket p = new DatagramPacket(
@@ -45,5 +42,18 @@ public class Client {
 				e.printStackTrace();
 			}                    
         }
+    }
+    
+    public void receive() {
+    	byte[] buf = new byte[256];
+    
+    	in = new DatagramPacket(buf, buf.length);
+    	try {
+			udpSocket.receive(in);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		String r = new String(in.getData(), 0, in.getLength());
+		System.out.println("CLIENT Messaggio da: " + in.getAddress().getHostAddress() + ": " + r);
     }
 }
